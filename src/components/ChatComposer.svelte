@@ -14,14 +14,18 @@
 
     inputValue = "";
   }
+
+  export let disabled = false;
+
 </script>
 
 <footer class="border-t border-white/10 bg-zinc-950/80 px-4 py-4 backdrop-blur">
   <form class="flex items-end gap-3" on:submit|preventDefault={handleSubmit}>
     <textarea
-      class="min-h-[44px] max-h-32 w-full resize-none rounded-xl bg-white/5 px-4 py-3 text-sm outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-indigo-500"
+      class="min-h-[44px] max-h-32 w-full resize-none rounded-xl bg-white/5 px-4 py-3 text-sm outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:focus:ring-0"
       placeholder="Écris un message…"
       rows="1"
+      disabled={disabled}
       bind:value={inputValue}
     ></textarea>
 

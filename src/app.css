@@ -1,3 +1,4 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.css";

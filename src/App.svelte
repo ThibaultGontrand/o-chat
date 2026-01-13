@@ -23,6 +23,10 @@
   // Message d'erreur à afficher si token invalide
   let messages = [];
 
+  // Pour le loader/spinner et les erreurs API
+  let isLoading = false;
+  let apiError = "";
+
 
   // onMount s’exécute une fois quand App.svelte est monté
   // Idéal pour lire localStorage (qui n'existe que dans le navigateur)
@@ -72,6 +76,8 @@
   async function sendMessageToMistral(userMessage) {
   // 1. envoyer userMessage à Mistral
    // URL officielle de l’API Mistral (chat)
+  console.log("🔑 Token présent ?", Boolean(token), "taille:", token?.length ?? 0);
+
   const url = "https://api.mistral.ai/v1/chat/completions";
 
   // On prépare la requête HTTP
@@ -89,16 +95,15 @@
 
     body: JSON.stringify({
       // Le modèle utilisé par l’IA
-      model: "mistral-small",
+      model: "mistral-small-latest",
+
 
       // Messages envoyés à l’IA
       // Pour l’instant : UN SEUL message utilisateur
-      messages: [
-        {
-          role: "user",
-          content: userMessage,
-        },
-      ],
+     messages: [
+  { role: "system", content: "Réponds toujours en Markdown et utilise des listes Markdown avec des tirets '-'." },
+  { role: "user", content: userMessage }
+  ],
     }),
   });
 
@@ -119,9 +124,30 @@
 }
 
 
-function sendMessage(text) {
-  console.log("Message envoyé :", text);
+async function sendMessage(text) {
+  // on bloque les doubles envois
+  isLoading = true;
+
+  // 1) message utilisateur
+  messages = [
+    ...messages,
+    { id: crypto.randomUUID(), role: "user", content: text }
+  ];
+  console.log("➡️ Appel Mistral avec un message de longueur :", text.length);
+
+  // 2) appel à Mistral
+  const aiText = await sendMessageToMistral(text);
+
+  // 3) message IA
+  messages = [
+    ...messages,
+    { id: crypto.randomUUID(), role: "assistant", content: aiText }
+  ];
+
+  // on réactive l'envoi
+  isLoading = false;
 }
+
 
 
 
@@ -176,8 +202,9 @@ function sendMessage(text) {
              sm:my-6 sm:h-[calc(100dvh-3rem)] sm:rounded-2xl sm:border sm:border-white/10 sm:bg-white/5 sm:shadow-xl"
     >
       <ChatHeader />
-      <ChatMessages />
-      <ChatComposer on:submitMessage={(e) => sendMessage(e.detail.text)} />   <!-- Écoute l'événement dispatch() et appelle sendMessage -->
+      <ChatMessages {messages} />
+      <ChatComposer on:submitMessage={(e) => sendMessage(e.detail.text)}
+      disabled={isLoading} />   <!-- Écoute l'événement dispatch() et appelle sendMessage -->
 
     </div>
 
