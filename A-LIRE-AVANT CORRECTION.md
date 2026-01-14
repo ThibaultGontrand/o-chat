@@ -1,69 +1,70 @@
 # O’Chat — Carnet de bord
 
-##  Objectif
-Mettre en place les bases de l’application de messagerie O’Chat, avec une interface responsive et les premières mécaniques d’interaction, en respectant les étapes demandées.
+## Objectif
+Mettre en place une application de messagerie avec une IA, en construisant progressivement l’interface, la logique applicative et la persistance des données.
 
 ---
 
 ## Ce que j’ai mis en place
 
 ### Jour 1
-- Initialisation du projet avec **Svelte + Vite**
+- Initialisation du projet avec Svelte et Vite
 - Mise en place de l’interface utilisateur de la zone de chat
-- Découpage de l’UI en composants :
-  - Header
-  - Zone de messages
-  - Zone de saisie
-- Travail avec **Tailwind CSS** pour la mise en forme
-- Mise en place d’un layout de type “application” :
-  - header et footer fixes
-  - zone centrale scrollable
-- Attention portée au responsive (desktop / mobile)
+- Découpage de l’UI en composants (zone de messages, zone de saisie, header)
+- Utilisation de Tailwind CSS
+- Mise en place d’un layout de type application avec header et footer fixes et une zone centrale scrollable
 
 ---
 
 ### Jour 2
-- Mise en place d’un système de **saisie et stockage du token Mistral**
-- Utilisation et compréhension du **localStorage** pour conserver le token côté navigateur
+- Mise en place d’un système de saisie du token Mistral
+- Stockage du token dans le localStorage
 - Blocage de l’accès à l’application tant que le token n’est pas renseigné
-- Mise en place de la communication **enfant → parent** via les événements Svelte (`dispatch`, `event.detail`)
+- Compréhension et utilisation des événements Svelte (dispatch, event.detail)
 - Implémentation de l’envoi de messages utilisateur
-- Appel réel à l’API **Mistral AI** et récupération des réponses
-- Affichage dynamique des messages utilisateur et IA dans la zone de chat
+- Appel réel à l’API Mistral et récupération des réponses
+- Ajout dynamique des messages utilisateur et IA dans l’interface
 - Gestion simple de l’état de chargement pour éviter les doubles envois
-- Mise en place du rendu **Markdown** des réponses de l’IA avec `svelte-exmarkdown`
-- Utilisation du CSS GitHub Markdown pour un rendu propre et lisible dans les bulles de discussion
+- Rendu des réponses de l’IA en Markdown avec svelte-exmarkdown
 
 ---
 
-##  Ce que je voulais faire mais que je n’ai pas encore terminé
-- Gestion de l’historique des messages sur une vraie base de données
-- Système de conversations multiples
-- Gestion plus avancée des erreurs API.
+### Jour 3
+- Installation et lancement de PocketBase en local
+- Création d’une collection `messages` pour stocker l’historique
+- Configuration des règles d’accès en public (lecture et création)
+- Mise en place d’une fonction dédiée à l’enregistrement des messages en base
+- Sauvegarde des messages utilisateur et des réponses de l’IA dans PocketBase
+- Chargement de l’historique des messages au démarrage de l’application
+- Synchronisation entre l’état local de l’application et les données stockées en base
 
 ---
 
-##  Points bloquants / difficultés rencontrées
-- Configuration initiale de l’environnement (Svelte 5, Tailwind, PostCSS)
-- Différences de syntaxe et de fonctionnement entre Svelte 4 et Svelte 5
-- Compréhension du fonctionnement des événements personnalisés Svelte
-- Mise en place du rendu Markdown dans un contexte de bulle de chat
+## Ce que je voulais faire mais que je n’ai pas encore terminé
+- Gestion plus avancée des erreurs (API IA ou base de données)
+- Amélioration de la gestion des états de chargement
 
 ---
 
-##  Ce que je referais différemment
-- Prendre plus de temps au départ pour bien comprendre l’écosystème Svelte 5
-- Anticiper davantage la gestion des états (chargement, erreurs)
+## Points bloquants ou difficultés rencontrées
+- Mise en place de PocketBase en local
+- Compréhension du moment où sauvegarder les messages (avant ou après affichage)
+- Distinction entre logique applicative et composants d’affichage
+
+---
+
+## Ce que je referais différemment
+- Prendre plus de temps pour comprendre l’architecture globale avant d’implémenter la persistance
 
 ---
 
 ## Prochaines étapes
-- Mettre en place la persistance des données (messages, conversations)
-- Améliorer la gestion des erreurs 
+- Ajouter un système de conversations
+- Associer les messages à une conversation
+- Améliorer l’expérience utilisateur lors des erreurs
 
 ---
 
-##  Bilan
-Les bases du projet sont maintenant solides.  
-L’interface est fonctionnelle, l’API Mistral est correctement intégrée et les réponses sont affichées dynamiquement avec un rendu Markdown propre.  
+## Bilan
+L’application est maintenant capable de communiquer avec une IA, d’afficher les messages dynamiquement et de conserver un historique persistant grâce à PocketBase.  
 

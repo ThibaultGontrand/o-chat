@@ -4,6 +4,10 @@
   import ChatHeader from "./components/ChatHeader.svelte";
   import ChatMessages from "./components/ChatMessages.svelte";
   import ChatComposer from "./components/ChatComposer.svelte";
+  import PocketBase from "pocketbase";
+
+const pb = new PocketBase("http://127.0.0.1:8090");
+
 
   // Clé utilisée pour stocker le token dans le localStorage
   // (simple et conforme à ton choix)
@@ -25,14 +29,13 @@
 
   // Pour le loader/spinner et les erreurs API
   let isLoading = false;
-  let apiError = "";
-
-
+ 
   // onMount s’exécute une fois quand App.svelte est monté
   // Idéal pour lire localStorage (qui n'existe que dans le navigateur)
   onMount(() => {
     const storedToken = localStorage.getItem(TOKEN_KEY);
     if (storedToken) token = storedToken;
+    loadMessagesFromDB();
   });
 
   // Enregistre le token :
@@ -125,29 +128,67 @@
 
 
 async function sendMessage(text) {
-  // on bloque les doubles envois
   isLoading = true;
 
-  // 1) message utilisateur
-  messages = [
-    ...messages,
-    { id: crypto.randomUUID(), role: "user", content: text }
-  ];
-  console.log("➡️ Appel Mistral avec un message de longueur :", text.length);
+  // 1️⃣ MESSAGE USER — affichage immédiat
+  const userMessage = {
+    id: crypto.randomUUID(),
+    role: "user",
+    content: text,
+  };
 
-  // 2) appel à Mistral
+  messages = [...messages, userMessage];
+
+  // 🔽 ICI : on sauvegarde le message USER en base
+  await saveMessageToDB({
+    role: "user",
+    content: text,
+  });
+
+  // 2️⃣ APPEL À MISTRAL
   const aiText = await sendMessageToMistral(text);
 
-  // 3) message IA
-  messages = [
-    ...messages,
-    { id: crypto.randomUUID(), role: "assistant", content: aiText }
-  ];
+  // 3️⃣ MESSAGE IA — affichage
+  const aiMessage = {
+    id: crypto.randomUUID(),
+    role: "assistant",
+    content: aiText,
+  };
 
-  // on réactive l'envoi
+  messages = [...messages, aiMessage];
+
+  // 🔽 ICI : on sauvegarde le message IA en base
+  await saveMessageToDB({
+    role: "assistant",
+    content: aiText,
+  });
+
   isLoading = false;
 }
 
+
+
+async function loadMessagesFromDB() {
+  // récupère tous les messages, triés du plus ancien au plus récent
+  const records = await pb.collection("messages").getFullList({
+    sort: "created",
+  });
+
+  // on transforme les records PocketBase en format attendu parl'UI
+  messages = records.map((r) => ({
+    id: r.id,
+    role: r.role,
+    content: r.content,
+  }));
+}
+
+
+async function saveMessageToDB({ role, content }) {
+  await pb.collection("messages").create({
+    role,
+    content,
+  });
+}
 
 
 
