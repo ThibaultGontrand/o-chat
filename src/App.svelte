@@ -229,9 +229,7 @@ async function saveMessageToDB({ role, content }) {
           Enregistrer le token
         </button>
 
-        <p class="mt-3 text-xs text-zinc-500">
-          Astuce : tu peux changer de token plus tard via le bouton “Changer token”.
-        </p>
+        
       </div>
     </div>
   {:else}
